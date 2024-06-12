@@ -33,12 +33,35 @@ def draw_line_plot():
 
 def draw_bar_plot():
     # Copy and modify data for monthly bar plot
-    df_bar = None
+
+      # Convert date index to month column
+    print(df.head())
+    df_period = df.reset_index()
+    print(df_period.head())
+    df_period['month'] = df_period['date'].apply(pd.Period, args=('M'))
+    df_period = df_period.drop(columns=['date'])
+    print(df_period.head())
+
+      # Find average page views per month
+    df_month_avg = df_period.groupby('month').mean()
+    print(df_month_avg.head())
+
+      # Add year column
+    df_bar = df_month_avg.reset_index()
+    print(df_bar.head())
+    df_bar['year'] = df_bar['month'].apply(pd.Period, args=('Y'))
+    print(df_bar.head())
+
+      # Truncate month column (not sure if necessary? tbd)
+    df_bar['month'] = df_bar['month'].apply(lambda x: x.month)
+    print(df_bar.head())
+    print(df_bar.info())
+    
 
     # Draw bar plot
 
 
-
+    fig = plt.figure()
 
 
     # Save image and return fig (don't change this part)
