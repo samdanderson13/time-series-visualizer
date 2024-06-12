@@ -47,19 +47,17 @@ def draw_bar_plot():
 
       # Add year column
     df_bar = df_month_avg.reset_index()
-    df_bar['year_trunc'] = df_bar['month'].apply(lambda x: x.year)
+    df_bar['year'] = df_bar['month'].apply(lambda x: x.year)
 
       # Truncate month column
     df_bar['month_trunc'] = df_bar['month'].apply(lambda x: x.month)
-    print(df_bar.head())
-    print(df_bar.info())
 
     # Draw bar plot
     fig = plt.figure()
     ax = fig.add_subplot(1,1,1)
     
     month_names = [None,'January','February','March','April','May','June','July','August','September','October','November','December']
-    years = df_bar['year_trunc'].unique()
+    years = df_bar['year'].unique()
     first_year = years[0]
     width = 0.1 # Width of each bar
 
@@ -67,11 +65,11 @@ def draw_bar_plot():
     months = range(1,13)
     for month in months:
         df_month = df_bar.loc[df_bar['month_trunc'] == month]
-        # Calculate positions for each month
-        # 0.0: January of first year, 0.1: February of first year... 1.1: December of first year
-        # 2.0: January of second year...
+        # Calculate positions for each month (YY/MM where year zero is 00)
+        # 0.0: 00-01, 0.1: 00-02... 1.1: 00-12
+        # 2.0: 01-01...
         offset = width * (month-1)
-        x = [(2 * (year - first_year)) + offset for year in df_month['year_trunc']]
+        x = [(2 * (year - first_year)) + offset for year in df_month['year']]
         ax.bar(x, df_month['value'], width, label=month_names[month])
 
     # Set ticks to the middle of each year's bars
@@ -93,8 +91,32 @@ def draw_box_plot():
     df_box['year'] = [d.year for d in df_box.date]
     df_box['month'] = [d.strftime('%b') for d in df_box.date]
 
+    print(df_box.head())
+    print(df_box.info())
+
     # Draw box plots (using Seaborn)
 
+    # Step one: single box plot
+    fig = plt.figure()
+    #ax = fig.add_subplot(1,3,1) //tbd: once I add the second
+    ax = fig.add_subplot(1,1,1)
+
+    year_plot = sns.boxplot(x=df_box['year'].astype("category"), y=df_box['value'], orient='v')
+    fig.add_axes(year_plot)
+
+    ax.set_title('Year-wise Box Plot (Trend)')
+    ax.set_xlabel('Year')
+    ax.set_ylabel('Page Views')
+    
+
+    
+
+    '''
+    ax = fig.add_subplot(1,3,3)
+    ax.set_title('Month-wise Box Plot (Seasonality)')
+    ax.set_title('Month')
+    ax.set_ylabel('Page Views')
+    '''
 
 
 
