@@ -129,6 +129,7 @@ def draw_bar_plot():
 
 
     # Step 3: Plot each month
+    '''
     ax = fig.add_subplot(1,1,1)
     month_names = [None,'January','February','March','April','May','June','July','August','September','October','November','December']
     years = df_bar['year_trunc'].unique()
@@ -156,8 +157,35 @@ def draw_bar_plot():
       # 6 is first year
       # 18 is second year
       # 6 + ((year - first_year) * 12)
-    xticks = [6 + ((year - first_year) * 12) for year in years]
+    #xticks = [6 + ((year - first_year) * 12) for year in years]
+    xticks = [0,1,2,3]
     ax.set_xticks(x, years)
+    '''
+
+    # Step 4: Add width
+    ax = fig.add_subplot(1,1,1)
+    month_names = [None,'January','February','March','April','May','June','July','August','September','October','November','December']
+    years = df_bar['year_trunc'].unique()
+    num_years = years.size
+    first_year = years[0]
+    #x = [0,2,4,6] # Base locations: I did the math
+    width = 0.1 # Width of each bar
+    months = range(1,13)
+    for month in months:
+        df_month = df_bar.loc[df_bar['month_trunc'] == month]
+        offset = width * (month-1)
+        x = [(2 * (year - first_year)) + offset for year in df_month['year_trunc']]
+        #x_mod = [n + offset for n in x]
+        ax.bar(x, df_month['value'], width, label=month_names[month])
+
+    x_ticks = [((year - first_year) * 2) + (width * (len(months) / 2)) for year in years]
+    print(x_ticks)
+    # ((year - first_year) * 2) + (width * len(months))
+    x = [0.6,2.6,4.6,6.6]
+    ax.set_xticks(x_ticks, years)
+    ax.legend()
+    ax.set_xlabel('Years')
+    ax.set_ylabel('Average Page Views')
 
     # Save image and return fig (don't change this part)
     fig.savefig('bar_plot.png')
