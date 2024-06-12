@@ -144,8 +144,6 @@ def draw_bar_plot():
           # 0 is January of first year
           # 1 is February of first year
           # 13 is January of second year
-          # (12 * (year - first_year)) + (month - 1)
-        offset = month-1
         x = [(12 * (year - first_year)) + (month - 1) for year in df_month['year_trunc']]
         ax.bar(x, df_month['value'], label=month_names[month])
     
@@ -154,6 +152,12 @@ def draw_bar_plot():
     ax.legend()
     ax.set_xlabel('Years')
     ax.set_ylabel('Average Page Views')
+    # Determine relative position:
+      # 6 is first year
+      # 18 is second year
+      # 6 + ((year - first_year) * 12)
+    xticks = [6 + ((year - first_year) * 12) for year in years]
+    ax.set_xticks(x, years)
 
     # Save image and return fig (don't change this part)
     fig.savefig('bar_plot.png')
