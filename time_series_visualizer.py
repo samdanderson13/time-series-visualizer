@@ -52,6 +52,12 @@ def draw_bar_plot():
       # Truncate month column
     df_bar['month_trunc'] = df_bar['month'].apply(lambda x: x.month)
 
+    '''
+    print(df.head())
+    print(df.tail())
+    print(df_bar['value'].size)
+    '''
+
     # Draw bar plot
     fig = plt.figure()
     ax = fig.add_subplot(1,1,1)
@@ -65,12 +71,20 @@ def draw_bar_plot():
     months = range(1,13)
     for month in months:
         df_month = df_bar.loc[df_bar['month_trunc'] == month]
+        vals = df_month['value']
+
+        # Add 0s for missing months
+        if vals.size < years.size:
+          zeroes = pd.Series([0] * (years.size - vals.size))
+          vals = pd.concat([zeroes, vals])
+
         # Calculate positions for each month (YY/MM where year zero is 00)
         # 0.0: 00-01, 0.1: 00-02... 1.1: 00-12
         # 2.0: 01-01...
         offset = width * (month-1)
-        x = [(2 * (year - first_year)) + offset for year in df_month['year']]
-        ax.bar(x, df_month['value'], width, label=month_names[month])
+        #x = [(2 * (year - first_year)) + offset for year in df_month['year']]
+        x = [(2 * (year - first_year)) + offset for year in years]
+        ax.bar(x, vals, width, label=month_names[month])
 
     # Set ticks to the middle of each year's bars
     x_ticks = [((year - first_year) * 2) + (width * (len(months) / 2)) for year in years]
